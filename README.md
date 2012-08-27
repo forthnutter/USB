@@ -1,4 +1,6 @@
-Emulators
+USB
 =========
 
-Keep all emulator designs in here
+Playing around with the USB interface using Factor
+
+(HID) Human Interface Device would be a good place to start with.
