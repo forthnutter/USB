@@ -1,0 +1,50 @@
+USING PARASHELL TO CONTROL STEPPER MOTORS
+
+Controlling 2 stepper motors with parashell.
+
+First you will need to interface the stepper motors with the parallel port.
+This example will use two, 5 five wire stepper motors.
+These stepper motors can easily be stripped from an old floppy disk drive.
+
+4 wires are used to control the position of the shaft, while the fifth wire is the common ground.
+You are on your own to figure out which wire is which.
+
+QUICK TIP: Hook the ground of a DC power source to one of the wires (look on the motor for the correct voltage, usually 12 v$
+     touch the positive lead to each of the motor's wires and note the response of the motor.
+     The motor should jiggle back and forth, once you have the correct sequence figured out you should be able to
+     touch the positive lead to each of the motor's wires, one at a time, and the motor will slowly rotate.
+     A stepper motor moves in steps to complete it's rotation, so to get it to spin 360 degrees you will have to
+     step through the motor's wires (ie., 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3,4, etc)
+     Once you have figured out the motor's wiring sequence it is a good idea to wire it to the parallel port
+     according to that sequence. (it just makes it easier to program)
+
+We will be using the DATA port for this example.
+We will assume that:
+        Pin2 is connected to motor wire for step1
+        Pin3 is connected to motor wire for step2
+        Pin4 is connected to motor wire for step3
+        Pin5 is connected to motor wire for step4
+        and the motor's ground is connected to ground.
+
+In this configuration will can write the following script to make the motor spin continuously.
+
+#!/bin/sh
+#
+#parashell Stepper Motor Example
+#brettcarroll@movlug.com
+#This example will loop, making the stepper motor spin until the script is issued a break signal.
+#You can increase the motors speed by lowering the usleep delay value,
+#but remember to leave at least one usleep in the script to avoid spiking your CPU.
+
+while :
+do
+parashell 0x378 1       #Step 1
+usleep 100              #usleep to avoid CPU spikes
+parashell 0x378 2       #Step 2
+usleep 100              #usleep to avoid CPU spikes
+parashell 0x378 4       #Step 3
+usleep 100              #usleep to avoid CPU spikes
+parashell 0x378 8       #Step 4
+usleep 100              #usleep to avoid CPU spikes
+done
+

@@ -1,0 +1,55 @@
+#include <windows.h>
+#pragma code_page(1252)
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+100 DIALOG DISCARDABLE  0, 0, 216, 89
+STYLE DS_MODALFRAME|DS_NOIDLEMSG|DS_NOFAILCREATE|WS_POPUP|WS_CAPTION|WS_SYSMENU|DS_CENTER
+CAPTION "Configuration of parallel port plugin"
+FONT 8, "MS Sans Serif"
+{
+ CTEXT		"This plugin is for controlling eight digital light channels via an old-style parallel port.\nFreeware, open-source, Henrik Haftmann, Chemnitz, 080817",-1,4,3,208,31,SS_NOPREFIX
+ LTEXT		"Port address (hex):",-1,22,38,68,10
+ COMBOBOX	10,90,36,86,96,CBS_DROPDOWN|CBS_AUTOHSCROLL|WS_TABSTOP|WS_GROUP
+ DEFPUSHBUTTON	"OK",IDOK,84,68,50,14,WS_GROUP
+ PUSHBUTTON	"Cancel",IDCANCEL,150,68,50,14
+}
+
+STRINGTABLE
+{
+ 1	"Wrong hexadecimal number"
+}
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+1 VERSIONINFO
+ FILEVERSION 1,0,2008,817
+ PRODUCTVERSION 1,0,2008,817
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904b0"
+  {
+   VALUE "CompanyName", "haftmann#software\0"
+   VALUE "FileDescription", "Discolitez Plugin for a Parallel port converter\0"
+   VALUE "FileVersion", "1.0 (08/08)\0"
+   VALUE "InternalName", "DLO_Parallel\0"
+   VALUE "OriginalFilename", "DLO_Parallel.dll\0"
+   VALUE "ProductName", "www.tu-chemnitz.de/~heha\0"
+   VALUE "ProductVersion", "1.0 (08/08)\0"
+  }
+ }
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 0x409, 1200
+ }
+}

@@ -1,0 +1,48 @@
+				#########################################
+				# Connecting LEDs to the Parallel Port. #
+				#########################################
+
+Parts:	(8) LEDs (L1 through L8)
+	(8) 470 ohm resistors (R1 through R8)
+	 DB-25 connector (or something else to plug into the Parallel Port)
+
+This wiring scheme will work with the right_knider.sh script found in the examples directory.
+
+Parallel Port Wiring:
+
+Pin #
+
+1 UNUSED
+	   +  -
+2 ----------L1--------R1------------(connect to GND)
+	   +  -
+3 ----------L2--------R2------------(connect to GND)
+	   +  -
+4 ----------L3--------R3------------(connect to GND)
+	   +  -
+5 ----------L4--------R4------------(connect to GND)
+	   +  -
+6 ----------L5--------R5------------(connect to GND)
+	   +  -
+7 ----------L6--------R6------------(connect to GND)
+	   +  -
+8 ----------L7--------R7------------(connect to GND)
+	   +  -
+9 ----------L8--------R8------------(connect to GND)
+
+10 UNUSED
+11 UNUSED
+12 UNUSED
+13 UNUSED
+14 UNUSED
+15 UNUSED
+16 UNUSED
+17 UNUSED
+18 GND
+19 GND
+20 GND			(Connect pins 18-25 together)
+21 GND
+22 GND
+23 GND
+24 GND
+25 GND

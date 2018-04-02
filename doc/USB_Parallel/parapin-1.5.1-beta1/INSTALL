@@ -1,0 +1,91 @@
+
+	Build and Install instructions for the parapin system
+
+			     Version 1.0
+
+	      Al Hooton (ahooton@users.sourceforge.net)
+
+
+
+------------------------------------------------------------------
+
+NOTE: Support for 2.4.x kernels in parapin is now deprecated,
+and will be removed in the next production release after 1.5.  If you
+build for a 2.4.x kernel you will receive a deprecation warning, but
+the build should still succeed.  If for some reason you can not
+upgrade to 2.6 kernels, please plan to use an archived version of
+parapin in the future.
+
+------------------------------------------------------------------
+
+
+	 Building and installing parapin is fairly simple, but there
+are a few things you must do prior to typing "make".  These steps are
+necessary to deal with differences in parapin to support running on
+both 2.4 kernels and 2.6 kernels.
+
+	 The parapin system can be built for kernel trees other than
+the one that is currently booted on your machine.  However, this
+*requires* editing the main Makefile as described below.
+
+	 Note that you do *not* have be root to build parapin, but you
+will most likely need to be root in order to install the libraries and
+modules in their standard system locations.
+
+Version-specific setup scripts
+------------------------------
+	 The instructions below are slightly different if you are
+running 2.4 kernels or 2.6 kernels:
+
+2.6 kernels: run "setup-2.6.sh"
+# ./setup-2.6.sh
+
+2.4 kernels: run "setup-2.4.sh"
+# ./setup-2.4.sh
+
+         The "setup-*" scripts copy "Makefile-<kernel-version>" to
+"Makefile".  If you run a setup script a second time, it will ask
+before trying overwrite "Makefile".  There should not be any reason to
+run one of these scripts a second time, but if you find a need to do
+so be careful -- any edits you have made to Makefile so parapin will
+build on your system will be lost.
+
+
+Common build/install instructions
+---------------------------------
+- Edit Makefile to change the LINUX_SRC and LINUX_MODULES values, if
+  necessary.  If you are building for the kernel you are running, on a
+  distribution that puts the kernel sources and libs in the normal
+  places (/usr/src and /lib), the default values should work for you.
+  That should cover most situations, however if you are building
+  parapin for a kernel tree in a different location, set these values
+  appropriately.
+
+- If you only need to use the userspace library, you can build it now,
+  and optionally install it (the install requires you to be root):
+  # make
+  # su
+  # make install
+
+- If you want to use the kparapin kernel module, and optionally the
+  parapindriver device-driver wrapper, you can build and install
+  everything at one time:
+  # make all
+  # su
+  # make allinstall
+
+- If you want to build (and optionally) install a language binding
+  you can use the <binding_name>-build and <binding_name>-install
+  Makefile targets.  Note that you will need all the appropriate
+  development environment packages required for the language in
+  question already installed prior to doing the build.  There are
+  currently bindings for python and java, here is an example for
+  the python binding:
+  # make parapin_py-build
+  # su
+  # make parapin_py-install
+
+- Note that several example programs are built in the "examples"
+  subdirectory.
+
+

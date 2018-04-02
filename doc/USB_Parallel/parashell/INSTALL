@@ -1,0 +1,6 @@
+parashell
+
+Installation on Windows
+	Copy bin/Win32/inpout32.dll to the windows system directory (usually C:\Windows\system\)
+
+That's all there is to it!

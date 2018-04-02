@@ -1,0 +1,4 @@
+
+ ruby extconf.rb
+ make
+ ./tests.rb open_and_close

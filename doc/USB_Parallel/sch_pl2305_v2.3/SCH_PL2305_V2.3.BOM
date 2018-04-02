@@ -1,0 +1,35 @@
+  Revised: Monday, April 11, 2011
+PL-2305 - USB to Parallel Converter          Revision: 1.3
+
+Prolific Technology Inc.
+
+
+
+
+
+Bill Of Materials          April 11,2011      10:38:48	Page1
+
+Item	Quantity	Reference	Part
+______________________________________________
+
+1	3	C1,C8,C10	1u
+2	6	C2,C4,C6,C7,C9,C11	0.1u
+3	2	C3,C5	10u
+4	1	C12	100p
+5	2	C13,C14	10p
+6	2	D1,D2	Schottky DIODE
+7	1	J1	Centronic Connector
+8	2	L1,L2	FB
+9	1	R1	1.5K
+10	2	R2,R3	27
+11	12	R4,R5,R6,R7,R8,R9,R10,	24
+		R11,R12,R13,R14,R15
+12	4	R16,R17,R18,R20	(4.7K)
+13	2	R19,R26	10K
+14	6	R21,R22,R23,R24,R25,R27	200K
+15	2	R28,R29	4.7K
+16	1	R30	(560K)
+17	1	USB_CON1	USB_CONA
+18	1	U1	PL-2305
+19	1	U2	24C02
+20	1	Y1	12 MHz

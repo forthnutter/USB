@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Prints the version number of any package that is build from this working
+# folder.  The version of a package is the revision on which this working folder
+# is based along with a "-dev" suffix if there are any local changes.
+#
+# $Revision: 1.1 $
+# $Date: 2007/06/04 00:44:43 $
+#
+REVISION=1.5.0
+CHANGES=0
+if [ "0" -eq "$CHANGES" ]; then
+    SUFFIX=''
+else
+    SUFFIX='-dev'
+fi
+echo $REVISION$SUFFIX

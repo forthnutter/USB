@@ -1,0 +1,159 @@
+
+			       Parapin
+	 the Parallel Port Pin Programming Library for Linux
+
+
+			     Release 1.5.0
+
+
+		 originally conceived and written by
+			     Jeremy Elson
+
+    current parapin maintenance and parapindriver module written by
+			      Al Hooton
+		   (ahooton at users dot sf dot net)
+
+
+----------------------------------------------------------------------
+
+
+=== What is Parapin, and where did it come from?
+
+   parapin makes it easy to write C code under Linux that controls
+   individual pins on a PC parallel port. This kind of control is very
+   useful for electronics projects that use the PC's parallel port as a
+   generic digital I/O interface. Parapin goes to great lengths to
+   insulate the programmer from the somewhat complex parallel port
+   programming interface provided by the PC hardware, making it easy to
+   use the parallel port for digital I/O. By the same token, this
+   abstraction also makes Parapin less useful in applications that need
+   to actually use the parallel port as a parallel port (e.g., for
+   talking to a printer).
+   
+   Parapin has two ``personalities'': it can either be used as a
+   user-space C library, or linked as part of a Linux kernel module. The
+   user and kernel personalities were both written with efficiency in
+   mind, so that Parapin can be used in time-sensitive applications.
+   Using Parapin should be very nearly as fast as writing directly to the
+   parallel port registers manually.
+   
+   The kernel module personality of parapin is not directly accesible
+   by programs running in userspace.  However, a device driver called
+   "parapindriver" is also included that allows userspace programs to
+   control the parallel port through standard device system calls such as
+   open(), close(), and ioctl().
+
+   Parapin was written by Jeremy Elson (jelson@circlemud.org) while at
+   the University of Southern California's Information Sciences
+   Institute. This work was supported by DARPA under grant No.
+   DABT63-99-1-0011 as part of the SCADDS project, and was also made
+   possible in part due to support from Cisco Systems.  Versions 0.97
+   and higher are freely available under the GNU Library General
+   Public License (LGPL), for further details see the file "LICENSING"
+   that should have been included with the parapin
+   distribution. Up-to-date information about Parapin, including the
+   latest version of the software, can be found at the Parapin project
+   summary page hosted on sourceforge.net:
+
+	http://sourceforge.net/projects/parapin/
+
+   The device driver "parapindriver" was written by the current
+   maintainer of the parapin package, Al Hooton
+   (ahooton@users.sourceforge.net), and is also licensed under the GNU
+   Library General Public License (LGPL).  This work was supported by
+   a very understanding spouse and quite a lot of black pekoe tea.
+
+
+=== Building and Installing Parapin
+
+   Please see the file "INSTALL" in the root directory of the parapin
+   distribution for instructions on building and installing for
+   systems based on both 2.4 and 2.6 kernels.
+
+
+=== The Userspace Mode
+
+   The userspace mode of parapin provides a library, libparapin.a, and
+   the parapin.h header file.  Your program can be linked to
+   libparapin.a and have access to all parapin functions, except for
+   interrupt handling.
+
+   For more information, please see the documentation in the "doc/"
+   subdirectory.
+
+
+=== The Kernel Mode
+
+   The kernel version of Parapin lets you write kernel modules that
+   tweak the parallel port.  Note, this is NOT a stand-alone module!
+   The kernel personality is NOT a device driver that allows userspace
+   programs to modify the parallel port.  It is kernel code that
+   allows you to write your own kernel module that uses the parallel
+   port.  See below for information on parapindriver, a kernel module
+   that wraps kparapin and provides a userspace interface via system
+   calls.
+
+   For more information, please see the documentation in the "doc/"
+   subdirectory.
+
+   
+
+ === The parapindriver wrapper module
+
+   The kernel module "parapindriver" may be loaded, after kparapin has been
+   loaded, in order to gain access to kparapin functionality from userspace
+   programs.  There is a loading script that is typically run late in the
+   boot process, called ppdrv_load.sh, that loads parapindriver, determines
+   the dynamically-generated major number associated with it, and creates a
+   corresponding /dev entry.  With that in place, userspace programs may
+   open the device to initialize kparapin, use several device-specific
+   ioctls to define in/out pin modes, set/get pin values, and then
+   finally close the device to cause kparapin to clean up.
+
+   There is an example userspace program that utilizes parapindriver in
+   the "examples" subdirectory of the parapin distribution.
+
+   For more information, please see the documentation in the "doc/"
+   subdirectory.
+
+
+
+=== Language bindings for parapin
+
+    Starting with version 1.5.0, a standardized approach to support
+    multiple language bindings is in place.  The first bindings to
+    be released are a Python binding created by parapin developer
+    Pedro Werneck, and a Java binding created by Neil Stockbridge.  As of
+    the inital 1.5.0 release, documentation is not yet in place for the
+    language bindings infrastructure, but it is quite simple.  Study
+    how the parapin_py binding has been done, and ask on the
+    parapin-internals mailing list for assistance if you would like to
+    work on a binding for another language.
+    
+
+
+=== Detailed Documentation
+
+
+   Detailed information about compiling and using parapin can be found
+   in the 'doc' directory:
+
+      doc/parapin.ps:    Nicely formatted postscript documentation
+      doc/parapin.html:  HTML documentation, not as nicely formatted
+      doc/parapin.txt:   Plain ASCII text documentation, looks even worse
+      doc/parapin.tex:   LaTeX source of all the above
+
+
+=== Dire Warning
+
+   Attaching custom electronics to your PC using the parallel port as a
+   digital I/O interface can damage both the PC and the electronics if
+   you make a mistake. If you're using high voltage electronics, a
+   mistake can also cause serious personal injury. Be careful.
+   
+   If possible, use a parallel port that is on an ISA card, instead of
+   one integrated onto the motherboard, to minimize the expense of
+   replacing a parallel port controller that you destroy.
+   
+      USE THIS SOFTWARE AT YOUR OWN RISK.
+

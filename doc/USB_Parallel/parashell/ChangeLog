@@ -1,0 +1,21 @@
+2002-7-22
+	* src/parashell.c - Command line arguments supported
+	* src/pin.c - Command line arguments supported
+
+2006-09-06
+	* src/parashell.pl - Windows support using inpout32.dll
+	* bin/Win32/parashell.exe - Updated binary
+
+2006-09-07
+	* src/parashell.pl - Combined input and output into single script
+	* bin/Win32/parashell.exe - Updated binary
+
+2008-12-01
+	* src/Linux - Created separate source directory for	Linux
+	* src/Win32 - Created separate source directory for	Windows
+	* src/Win32/parashell.pl - rewritten to allow using other parallel port bytes (CONTROL, DATA, and STATUS)
+													 - changed Option argument syntax
+	* bin/Win32/parashell.exe - Updated binary
+	* README - Updated to reflect new changes
+	* INSTALL - Included clarifications to Windows system directory
+	* docs/parallel_port_pinout.txt - Added pinout documentation for the parallel port

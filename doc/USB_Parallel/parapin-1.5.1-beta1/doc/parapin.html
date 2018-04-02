@@ -1,0 +1,1243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>PARAPIN:
+A Parallel Port Pin Programming Library for Linux</TITLE>
+<META NAME="description" CONTENT="PARAPIN:
+A Parallel Port Pin Programming Library for Linux">
+<META NAME="keywords" CONTENT="parapin">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="parapin.css">
+
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->[ ] []    
+<BR>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<P>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+4">PARAPIN:</FONT> 
+<BR>
+<BR>
+<FONT SIZE="+3">A Parallel Port Pin Programming Library for Linux</FONT>
+</DIV>
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="+2">Release 1.5.0 
+<BR>
+<BR>
+http://parapin.sourceforge.net/</FONT>
+ <BR>
+</DIV>
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="+2">Originally authored by 
+<BR>
+Jeremy Elson 
+<BR>
+</FONT></DIV>
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="+2">This work was supported by DARPA under grant No. DABT63-99-1-0011 as
+part of the SCADDS project, and was also made possible in part due to
+support from Cisco Systems.
+</FONT></DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="+2">Currently maintained by 
+<BR><FONT SIZE="+2">Al Hooton 
+<BR><TT>ahooton@users.sourceforge.net</TT></FONT></FONT>
+
+</DIV>
+
+<P>
+
+<P>
+
+<H1><A NAME="SECTION10010000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+<TT>parapin</TT> makes it easy to write C code under Linux that controls
+individual pins on a PC parallel port.  This kind of control is very
+useful for electronics projects that use the PC's parallel port as a
+generic digital I/O interface.  Parapin goes to great lengths to
+insulate the programmer from the somewhat complex parallel port
+programming interface provided by the PC hardware, making it easy to
+use the parallel port for digital I/O.  By the same token, this
+abstraction also makes Parapin less useful in applications that need
+to actually use the parallel port as a <EM>parallel port</EM> (e.g., for
+talking to a printer).
+
+<P>
+Parapin provides a simple interface that lets programs use pins of the
+PC parallel port as digital inputs or outputs.  Using this interface,
+it is easy to assert high or low TTL logic values on output pins or
+poll the state of input pins.  Some pins are bidirectional--that is,
+they can be switched between input and output modes on the fly.
+
+<P>
+Parapin has two personalities: it can either be used as a
+user-space C library, or linked as part of a Linux kernel module.  The
+user and kernel personalities were both written with efficiency in
+mind, so that Parapin can be used in time-sensitive applications.
+Using Parapin should be very nearly as fast as writing directly to the
+parallel port registers manually.  The kernel module personality 
+of parapin is not directly accesible by programs running in userspace.
+However, 
+a device driver called <TT>parapindriver</TT> is also included that allows
+userspace programs to control the parallel port through standard device
+system calls such as open(), close(), and ioctl().
+
+<P>
+Starting with version 1.5.0, a standardized approach to support
+multiple language bindings is in place.  The first two bindings to
+be released are a Python binding, created by parapin developer
+Pedro Werneck (pwerneck at users dot sf dot net), and a java binding
+created by parapin developer Neil Stockbridge
+(unclouded at users dot sf dot net).
+Documentation and examples for a language binding are available in
+the subdirectory for that binding, i.e., the parapin_java directory
+holds everything you need to understand and use the java binding to
+parapin.
+
+<P>
+The language bindings infrastructure is quite simple, but there are
+established patterns that should be followed to allow consistent
+build and usage across all the bindings.  Study
+how the two existing bindings have been done, and ask on the
+parapin-internals mailing list for assistance if you would like to
+work on a binding for another language.
+
+<P>
+Parapin was written by Jeremy
+  Elson
+while at the University of Southern California's Information Sciences
+Institute.  This work was supported by DARPA under grant No. 
+DABT63-99-1-0011 as part of the SCADDS project, and was also made
+possible in part due to support from Cisco Systems.  It is freely
+available under the GNU Library General Public License (LGPL).
+
+<P>
+The device driver <TT>parapindriver</TT> was written by
+<A NAME="tex2html1"
+  HREF="mailto:ahooton@users.sourceforge.net">Al Hooton</A>
+(<TT>ahooton@users.sourceforge.net</TT>), current maintainer of the parapin package, and is
+also licensed under the GNU Library GeneralPublic License (LGPL).
+This work was supported by a very understanding spouse and quite a lot
+of black pekoe tea.F
+
+<P>
+Up-to-date information about Parapin, including the latest version of
+the software, can be found at the <A NAME="tex2html2"
+  HREF="http://parapin.sourceforge.net/">Parapin Home
+  Page</A>.
+
+<P>
+<FONT SIZE="+4">Warning:</FONT>
+
+<P>
+<EM>Attaching custom electronics to your PC using the parallel port
+as a digital I/O interface can damage both the PC and the electronics
+if you make a mistake. <B>If you're using high voltage electronics,
+a mistake can also cause serious personal injury.  Be careful.</B></EM>
+
+<P>
+If possible, use a parallel port that is on an expansion card, instead of
+one integrated onto the motherboard, to minimize the expense of
+replacing a parallel port controller that you destroy.  Replacing an 
+expansion card is much less expensive than replacing a motherboard.
+
+<P>
+<EM><B>USE THIS SOFTWARE AT YOUR OWN RISK.  PARAPIN IS PROVIDED WITHOUT ANY WARRANTY AT ALL.  YOU ASSUME ALL RISK IN USING IT.</B></EM>
+
+<P>
+
+<H1><A NAME="SECTION10020000000000000000">&#160;</A>
+<A NAME="specs">&#160;</A>
+<BR>
+Parallel Port Specifications
+</H1>
+
+<P>
+This section will briefly outline some of the basic electrical
+operating characteristics of a PC parallel port.  More detail can be
+found in the <A NAME="tex2html3"
+  HREF="http://www.lvr.com/files/ibmlpt.txt">IBM Parallel Port
+FAQ</A>, written by
+Zhahai Stewart, or the
+<A NAME="tex2html4"
+  HREF="http://www.psionics.demon.co.uk/mp3/faqs/lpt-kris.html">PC Parallel Port
+Mini-FAQ</A>
+by Kris Heidenstrom.  Those
+documents have a lot of detail about registers, bit numbers, and
+inverted logic--those topics won't be discussed here, because the
+entire point of Parapin is to let programmers control the port <EM>without</EM> knowing those gory details.
+
+<P>
+The PC parallel port usually consists of 25 pins in a DB-25 connector.
+These pins can interface to the TTL logic of an external device,
+either as inputs or outputs.  Some pins can be used as inputs only,
+while some can be switched in software, on-the-fly, between input mode
+and output mode.  Note, however, that it can be dangerous for two
+devices to assert an output value on the same line at the same time.
+Devices that are using bidirectional pins must agree (somehow) on who
+is supposed to control the line at any given time.
+
+<P>
+From the point of view of Parapin, the pinout of the parallel port is
+as follows:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Pin</TD>
+<TD ALIGN="CENTER">Direction</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">In/Out</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2-9</TD>
+<TD ALIGN="CENTER">In/Out (see note)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">10</TD>
+<TD ALIGN="CENTER">Input, Interrupt Generator</TD>
+</TR>
+<TR><TD ALIGN="CENTER">11</TD>
+<TD ALIGN="CENTER">Input</TD>
+</TR>
+<TR><TD ALIGN="CENTER">12</TD>
+<TD ALIGN="CENTER">Input</TD>
+</TR>
+<TR><TD ALIGN="CENTER">13</TD>
+<TD ALIGN="CENTER">Input</TD>
+</TR>
+<TR><TD ALIGN="CENTER">14</TD>
+<TD ALIGN="CENTER">In/Out</TD>
+</TR>
+<TR><TD ALIGN="CENTER">15</TD>
+<TD ALIGN="CENTER">Input</TD>
+</TR>
+<TR><TD ALIGN="CENTER">16</TD>
+<TD ALIGN="CENTER">In/Out</TD>
+</TR>
+<TR><TD ALIGN="CENTER">17</TD>
+<TD ALIGN="CENTER">In/Out</TD>
+</TR>
+<TR><TD ALIGN="CENTER">18-25</TD>
+<TD ALIGN="CENTER">Ground</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Pins 2-9--called the parallel port's ``Data Pins''--are <EM>ganged</EM>.  That is, their directions are not individually controllable;
+they must be either all inputs or all outputs.  (The actual <EM>values</EM> of the pins--on or off--<EM>are</EM> individually
+controllable.)  Also, some of the oldest parallel ports do not support
+switching between inputs and outputs on pins 2-9 at all, so pins 2-9
+are always outputs.  Many PC motherboards allow the user to select the
+personality of the parallel port in the BIOS.  If you need to use pins
+2-9 as bidirectional or input pins, make sure your port is configured
+as a ``PS/2'' port or one of the other advanced port types; ports in
+SPP (Standard Parallel Port) mode may not support direction switching
+on pins 2-9.
+
+<P>
+Pin 10 is special because it can generate interrupts.  Interrupt
+handling is discussed in more detail in Section&nbsp;<A HREF="#interrupts">9</A>.
+
+<P>
+Output pins can assert either a TTL high value (between +2.4v and
++5.0v), or a TTL low (between 0v and +0.8v).  The port can not source
+much current.  Specs for different implementations vary somewhat, but
+a safe assumption (staying within spec) is that the voltage will be at
+least 2.5v when drawing up to 2.5mA.  In reality you can sometimes get
+away with using an output pin to power a component that uses 3v or
+even 5v logic, but the supplied voltage may sag if more than 2.5mA is
+drawn.  Input pins are typically spec'ed to be able to sink up to
+about 20mA.  For a more detailed treatment of the parallel port
+electronics, see the references above.
+
+<P>
+
+<H1><A NAME="SECTION10030000000000000000">&#160;</A>
+<A NAME="basics">&#160;</A>
+<BR>
+Parapin Basics
+</H1>
+
+<H2><A NAME="SECTION10031000000000000000">
+Userspace version and kernel version</A>
+</H2>
+
+<P>
+Parapin has two personalities: one for plain user-space operation
+(i.e., linking Parapin with a regular C program), and one for use with
+Linux kernel modules (<TT>kparapin</TT>.
+The two personalities differ in how they are
+compiled (Section&nbsp;<A HREF="#compiling">4</A>) and initialized
+(Section&nbsp;<A HREF="#initialization">5</A>).  Also, only the kernel version is
+capable of servicing parallel-port interrupts that are generated from
+Pin 10.  Otherwise, the two personalities are the same.
+
+<P>
+The user-space library version of Parapin works very much like any
+other C library.  However, kernel programming differs from user-space
+programming in many important ways; these details are far beyond the
+scope of this document.  The best reference available is
+a fantastic book by Rubini and Corbet, <A NAME="tex2html5"
+  HREF="http://www.ora.com/catalog/linuxdrive3/">Linux
+Device Drivers</A>.  Go buy it
+from your favorite technical bookstore, or download it as an Open Book
+from 
+<A NAME="tex2html6"
+  HREF="http://www.xml.com/ldd/chapter/book/">http://www.xml.com/ldd/chapter/book/</A>
+A far inferior alternative (but better than nothing) is the free
+<A NAME="tex2html7"
+  HREF="http://en.tldp.org/LDP/khg/HyperNews/get/khg.html">Linux Kernel Hacker's
+Guide</A>.
+
+<P>
+
+<H2><A NAME="SECTION10032000000000000000">
+Device driver interface</A>
+</H2>
+
+<P>
+If you would like to use the kernel version of parapin
+from a userspace program without writing your own hardware-specific driver,
+you can load the <TT>parapindriver</TT> module
+after loading kparapin.  This device driver exposes
+the functionality of kparapin through a normal character-device interface
+(except for interrupt handling).
+The primary advantages are that
+access to the parallel port functionality of parapin may be controlled
+through /dev filesystem permissions, and all interaction is done through
+standard device-oriented system calls such as open(), close(), and
+ioctl().
+
+<P>
+
+<H2><A NAME="SECTION10033000000000000000">
+Parapin operations</A>
+</H2>
+
+<P>
+In Parapin, there are five basic operations possible:
+
+<P>
+
+<UL>
+<LI>Initialize the library (Section&nbsp;<A HREF="#initialization">5</A>)
+</LI>
+<LI>Put pins into input or output mode (Section&nbsp;<A HREF="#configuring">6</A>)
+</LI>
+<LI>Set the state of output pins--i.e., high/set or low/clear
+(Section&nbsp;<A HREF="#setandclear">7</A>)
+</LI>
+<LI>Poll the state of input pins (Section&nbsp;<A HREF="#polling">8</A>)
+</LI>
+<LI>Handle interrupts (Section&nbsp;<A HREF="#interrupts">9</A>)
+</LI>
+</UL>
+
+<P>
+Each of these functions will be discussed in later sections.
+
+<P>
+Most of the functions take a <EM>pins</EM> argument--a single integer
+that is actually a bitmap representing the set of pins that are being
+changed or queried.  Parapin's header file, <TT>parapin.h</TT>, defines a
+number of constants of the form ``<TT>LP_PINnn</TT>'' that applications
+should use to specify pins.  The <TT>nn</TT> represents the pin number,
+ranging from 01 to 17.  For example, the command
+<PRE>
+        set_pin(LP_PIN05);
+</PRE>
+turns on pin number 5 (assuming that pin is configured as an output
+pin; the exact semantics of <TT>set_pin</TT> are discussed in later
+sections).  C's logical-or operator can be used to combine
+multiple pins into a single argument, so
+<PRE>
+        set_pin(LP_PIN02 | LP_PIN14 | LP_PIN17);
+</PRE>
+turns on pins 2, 14, and 17.
+
+<P>
+Usually, it is most convenient to use <TT>#define</TT> statements to
+give pins logical names that have meaning in the context of your
+application.  The documentation of most ICs and other electronics
+gives names to I/O pins; using those names makes the most sense.  For
+example, a National Semiconductor ADC0831 Analog-to-Digital converter
+has four I/O pins called <TT>VCC</TT> (the supply voltage), <TT>CS</TT>
+(chip select), <TT>CLK</TT> (clock), and <TT>D0</TT> (data output 0).  A
+fragment of code to control this chip might look something like this:
+<PRE>
+        #include "parapin.h"
+
+        #define VCC LP_PIN02
+        #define CS  LP_PIN03
+        #define CLK LP_PIN04
+        #define D0  LP_PIN10 /* input pin */
+        ...
+        clear_pin(CS);  /* pull Chip Select low, tell it to acquire */
+        ...
+        set_pin(CLK);   /* clock it */
+        clear_pin(CLK);
+</PRE>
+
+<P>
+This method has a number of advantages.  First, it makes the code more
+readable to someone who has the ADC0831 documentation in hand.
+Second, the <TT>#define</TT> statements summarize the mappings of IC
+pins to parallel port pins, making it easier to build the physical
+interface.  Also, if the physical interface changes, the <TT>#define</TT>s make it easy to remap parallel port pins to new IC pins.
+
+<P>
+Parapin's header file also provides these constants in an array called
+<TT>LP_PIN</TT>.  This array is useful in some contexts where the pin
+number is being specified with a variable instead of a constant.  For
+example:
+<PRE>
+        /* runway lights: light up pins 1 through 9 in sequence */
+        while (1) {
+                for (i = 1; i &lt;= 9; i++) {
+                        set_pin(LP_PIN[i]);
+                        usleep(200);
+                        clear_pin(LP_PIN[i]);
+                }
+        }
+</PRE>
+
+<P>
+Code such as the above fragment would be much more complex if the
+programmer were forced to use constants.  There is a direct
+correspondence between indices in the array and pin numbers;
+accordingly, only indices from 1 to 17 should be used.  Programs
+should never reference <code>LP_PIN[0]</code> or <code>LP_PIN[i]</code> where i &gt; 17.
+<H1><A NAME="SECTION10040000000000000000">&#160;</A>
+<A NAME="compiling">&#160;</A>
+<BR>
+Compiling and Linking Your Programs to Use Parapin
+</H1>
+
+<P>
+Note: Please see the file <TT>INSTALL</TT>, located in the root directory
+of the parapin distribution, for details on building and installing
+parapin on your system.
+
+<P>
+
+<H2><A NAME="SECTION10041000000000000000">
+The C Library Version</A>
+</H2>
+
+<P>
+The user-space version of Parapin is compiled and linked very much
+like any other C library.  If you installed Parapin on your system
+using ``make install'', the library (<TT>libparapin.a</TT>) was probably
+installed in <TT>/usr/local/lib</TT>.  The header file with the library's
+function prototypes and other definitions, <TT>parapin.h</TT>, is
+in the location given in the parapin Makefile as
+<TT>{LINUX_SRC}/include/</TT>.
+
+<P>
+Important: <EM>Parapin must be compiled with gcc using compiler
+optimization of <TT>-O</TT> or better</EM>.  This is because Parapin uses the
+<TT>inb</TT> and <TT>outb</TT> functions that exist only with compiler
+optimization.
+
+<P>
+To use the library, first make sure to <TT>#include</TT> parapin.h in
+your C source file.  When linking, add <TT>-lparapin</TT> along with any
+other libraries you might be using.
+
+<P>
+
+<H2><A NAME="SECTION10042000000000000000">
+The Kernel Module Version</A>
+</H2>
+
+<P>
+As with the C library version, kernel source code that uses Parapin
+must <TT>#include</TT> parapin.h.  Make sure that <code>__KERNEL__</code> is
+defined before the include statement.
+
+<P>
+Important: <EM>Parapin must be compiled with gcc using compiler
+optimization of <TT>-O</TT> or better</EM>.  This is because Parapin uses the
+<TT>inb</TT> and <TT>outb</TT> functions that exist only with compiler
+optimization.
+
+<P>
+Linking is a little more complicated.  As with any other
+interdependent kernel modules, there are actually two ways of using
+parapin with your Linux device driver:
+
+<UL>
+<LI>Compile Parapin independently, insert it into the kernel as its
+own module using <TT>modprobe</TT>, and then insert your driver separately
+using a different <TT>modprobe</TT> command.  In this case, modprobe and the
+kernel resolve the links between your driver and Parapin's functions.
+</LI>
+<LI>Compile Parapin right into your device driver, so that the
+entire thing is inserted with a single <TT>modprobe</TT> command.  This can
+be less confusing for users if you're distributing your device driver
+to other people because it eliminates the extra step of finding,
+compiling, and inserting a separate module.  On the other hand, it
+will cause conflicts if a user tries to insert two different modules
+that use Parapin at the same time.
+</LI>
+</UL>
+
+<P>
+The Makefiles that come with Parapin compiles Parapin into its own
+independent module, called <TT>kparapin.o</TT>.  This module can be
+inserted into the kernel using <TT>modprobe</TT> (as described in the first
+method).  If you'd rather use the second method, and link Parapin
+directly with your device driver module instead, do the following:
+
+<P>
+
+<OL>
+<LI>Copy parapin.c into your driver's source directory.
+</LI>
+<LI>In your driver's Makefile, compile kparapin.o from parapin.c,
+<EM>with</EM> the <code>-D__KERNEL__</code> directive, but <EM>without</EM> the
+<TT>-DMODULE</TT> directive.
+</LI>
+<LI>Link kparapin.o with all the other object files that make up
+your driver.
+</LI>
+</OL>
+
+<P>
+If your driver only consists of one other source file, and you have
+never linked multiple .o's together into a single kernel module, it's
+easy.  First, compile each .c file into a .o using <TT>gcc -c</TT> (the
+same as with normal C programs that span multiple source files); then,
+link all the .o's together into one big .o using <TT>ld -i -o
+final-driver.o component1.o component2.o component3.o ...</TT>.
+
+<P>
+<B>Important note:</B> Whichever method you use, Parapin also requires
+functions provided by the standard Linux kernel module <TT>parport</TT>.
+Make sure you insert the <TT>parport</TT> module with the <TT>modprobe</TT>
+command before inserting any
+modules that use Parapin; otherwise, you will get unresolved symbols.
+
+<P>
+
+<H2><A NAME="SECTION10043000000000000000">
+The device driver 'parapindriver'</A>
+</H2>
+
+<P>
+When building a userspace program that will make use of the <TT>parapindriver</TT>
+interface to kparapin, you must include <TT>parapindriver.h</TT>.  This header
+file defines the device-specific ioctl commands used to communicate
+with the device driver.  It also includes <TT>parapin.h</TT>, so your program
+can make use of all the <TT>``LP_*''</TT> constants.  The <TT>parapindriver</TT>
+system calls take arguments using these constants and pass them unchanged
+down to the kparapin routines.
+
+<P>
+
+<H1><A NAME="SECTION10050000000000000000">&#160;</A>
+<A NAME="initialization">&#160;</A>
+<BR>
+Initialization and Shutdown
+</H1>
+
+<P>
+Before any other Parapin functions can be used, the library must be
+<EM>initialized</EM>.  Parapin will fail <EM>ungracefully</EM> if any
+functions are called before its initialization.  This is because the
+library's other functions do not check that the library is in
+a sane state before doing their jobs.  This was an intentional design
+decision because the maximum possible efficiency is required in many
+applications that drive the parallel port at high speeds.  The goal is
+for Parapin to be almost as fast as directly writing to registers.
+
+<P>
+The exact initialization method varies, depending on if Parapin
+is being used as a C library, as a kernel module, or through the
+<TT>parapindriver</TT> device interface.
+
+<P>
+
+<H2><A NAME="SECTION10051000000000000000">
+The C Library Version</A>
+</H2>
+
+<P>
+C library initialization is performed using the function
+<PRE>
+        int pin_init_user(int lp_base);
+</PRE>
+whose single argument, <TT>lp_base</TT>, specifies the base I/O address
+of the parallel port being controlled.  Common values of <TT>lp_base</TT>
+are 0x378 for LPT1, or 0x278 for LPT2; parapin.h defines the constants
+<TT>LPT1</TT> and <TT>LPT2</TT> to these values for convenience.  However,
+the exact port address may vary depending on the configuration of your
+computer.  If you're unsure, the BIOS status screen displayed while
+the computer boots usually shows the base addresses of all detected
+parallel ports.
+
+<P>
+<B>Programs using Parapin must be running as root when they are
+initialized.</B>  Initialization of the library will fail if the process
+is owned by any user other than the super-user because Parapin has to
+request the right to write directly to hardware I/O registers using
+the <TT>ioperm</TT> function.  The security-conscious programmer is
+encouraged to drop root privileges using <TT>setuid</TT> after a
+successful call to <TT>pin_init_user</TT>.
+
+<P>
+The return value of <TT>pin_init_user</TT> will be 0 if initialization
+is successful, or -1 if there is an error.  Applications must not call
+other Parapin functions if initialization fails.  Failed
+initialization is usually because the program is not running as root.
+
+<P>
+No shutdown function needs to be called in the C library version of
+Parapin.
+
+<P>
+
+<H2><A NAME="SECTION10052000000000000000">
+The Kernel Module Version</A>
+</H2>
+
+<P>
+Initialization and shutdown in the kernel flavor of Parapin is done
+using the following two functions:
+<PRE>
+        int pin_init_kernel(int lpt,
+                            void (*irq_func)(int, void *, struct pt_regs *));
+        void pin_release();
+</PRE>
+
+<P>
+The first function is not as intimidating as it looks.  Its first
+argument, <TT>lpt</TT>, is the parallel port number that you want to
+control.  The number references the kernel's table of detected
+parallel ports; 0 is the first parallel port and is a safe guess as a
+default.
+
+<P>
+The second argument, <TT>irq_func</TT>, is a pointer to a callback
+function to be used for servicing interrupts generated by the parallel
+port.  This argument may be NULL if the driver does not need to handle
+interrupts.  Details about interrupt handling are discussed in
+Section&nbsp;<A HREF="#interrupts">9</A>.
+
+<P>
+<TT>pin_init_kernel</TT> will return 0 on success, or a number less
+than 0 on error.  The return value will be a standard <TT>errno</TT>
+value such as <TT>-ENODEV</TT>, suitable for passing up to higher layers.
+If Parapin initialization fails, the driver <EM>must not</EM> call
+Parapin's other functions.  As described earlier, this requirement is
+not enforced for efficiency reasons.
+
+<P>
+When a driver is finished controlling the parallel port using Parapin,
+it must call <TT>pin_release</TT>.  The state of the parallel port's
+interrupt-enable bit will be restored to the state it was in at the
+time <TT>pin_init_kernel</TT> was originally called.
+
+<P>
+Parapin's <TT>pin_init_kernel</TT> and <TT>pin_release</TT> functions
+work with the Linux kernel's standard <TT>parport</TT> facility; as noted
+above, the <TT>parport</TT> module must be loaded along with any module
+that uses Parapin.  When initialized, Parapin will register itself as
+a user of the parallel port, and claim <EM>exclusive access</EM> to that
+port.  This means no other processes will be allowed to use the
+parallel port until <TT>pin_release</TT> is called.
+
+<P>
+
+<H2><A NAME="SECTION10053000000000000000">
+Device driver interface</A>
+</H2>
+
+<P>
+Before the <TT>parapindriver</TT> device interface may be used, an
+entry in /dev must be created that corresponds to the device driver
+module loaded in to the kernel.  The easiest way to do this is to
+execute the initialization script <TT>ppdrv_load.sh</TT>, included in
+the parapin distribution, late in the normal
+boot process with root privileges.
+A common way to do this is to run <TT>ppdrv_load.sh</TT> at the end of
+<TT>/etc/rc.local</TT>.  Note that <TT>ppdrv_load.sh</TT> was
+installed in <TT>/usr/local/bin</TT> if you built the <TT>modulesinstall</TT>
+target in the distribution Makefile.
+
+<P>
+The <TT>ppdrv_load.sh</TT> script performs the following steps, if you
+find that you need to do things manually or in some other way:
+
+<P>
+
+<OL>
+<LI>Loads both parport and kparapin using <TT>insmod(8)</TT>
+</LI>
+<LI>Loads parapindriver, passing the <TT>devname=&lt;device-name&gt;</TT>
+argument to the module
+</LI>
+<LI>Determines the major number dynamically assigned to parapindriver
+by the kernel, by looking at <TT>/proc/devices</TT> for 
+an entry called <TT>&lt;device-name&gt;</TT>
+</LI>
+<LI>Creates <TT>/dev/&lt;device-name&gt;</TT> using <TT>mknod(8)</TT>, giving it the
+major number determined above
+</LI>
+<LI>Changes the mode and ownership of <TT>/dev/&lt;device-name&gt;</TT>
+</LI>
+</OL>
+
+<P>
+These steps only need to be done once each time
+the machine is booted.  If there are problems, either <TT>insmod(8)</TT> or
+<TT>parapindriver</TT> will display errors on the console and through the
+syslog mechanism (if you have it running).
+
+<P>
+Once parapindriver is successfully loaded, and a corresponding /dev
+entry is in place, initialization and shutdown of the parallel port
+are easy.  To
+initialize the parapin system, just call <TT>open(2)</TT> on
+the /dev entry as you would any other device file:
+
+<P>
+<PRE>
+       int device;
+       device = open("/dev/&lt;device-name&gt;", 0);
+
+       if (device &lt; 0) {
+         fprintf(stderr, "device open failed\n");
+         exit(-1);
+       }
+</PRE>
+
+<P>
+Standard system errors with negative values will be returned from
+<TT>open(2)</TT> if it fails.  If the device is already open, the return
+value will be <TT>-EBUSY</TT>.
+
+<P>
+To shutdown the parapin system you simply have to call <TT>close(2)</TT>:
+
+<P>
+<PRE>
+       close(device);
+</PRE>
+
+<P>
+See the example file <TT>ppdrv-test.c</TT> for further information.
+
+<P>
+
+<H1><A NAME="SECTION10060000000000000000">&#160;</A>
+<A NAME="configuring">&#160;</A>
+<BR>
+Configuring Pins as Inputs or Outputs
+</H1>
+
+<P>
+As shown in the table in Section&nbsp;<A HREF="#specs">2</A>, most of the pins on
+modern parallel ports can be configured as either inputs or outputs.
+When Parapin is initialized, it is safest to assume that the state of
+all these switchable pins is <EM>undefined</EM>.  That is, they must be
+explicitly configured as outputs before values are asserted, or
+configured as inputs before they are queried.
+
+<P>
+As mentioned earlier, Pins 2-9 can not be configured independently.
+They are always in the same mode: either all input or all output.
+Configuring any pin in that range has the effect of configuring all of
+them.  The constant <TT>LP_DATA_PINS</TT> is an alias that refers to
+all the pins in this range (2-9).
+
+<P>
+The other switchable pins (Pins 1, 14, 16, and 17) may be
+independently configured.  Pins 10, 11, 12, 13, and 15 are always
+inputs and can not be configured.
+
+<P>
+It is also worth reiterating that having two devices both try to
+assert (output) a value on the same pin at the same time can be
+dangerous.  The results are undefined and are often dependent on the
+exact hardware implementation of your particular parallel port.  This
+situation should be avoided.  The protocol spoken between the PC and
+the external device you're controlling to should always agree who is
+asserting a value on a pin and who is reading that pin as an input.
+
+<P>
+
+<H2><A NAME="SECTION10061000000000000000">
+C library version and Kernel version</A>
+</H2>
+
+<P>
+In both the userspace C library version, and the kernel version, 
+pins are configured using one of the following three functions:
+
+<P>
+<PRE>
+        void pin_input_mode(int pins);
+        void pin_output_mode(int pins);
+        void pin_mode(int pins, int mode);
+</PRE>
+
+<P>
+The <TT>pins</TT> argument of all three functions accepts the <TT>LP_PINnn</TT> constants described in Section&nbsp;<A HREF="#basics">3</A>.  The <TT>pin_mode</TT> function is just provided for convenience; it does the same
+thing as the <TT>pin_input</TT> and <TT>pin_output</TT> functions.  Its
+<TT>mode</TT> argument takes one of the two constants <TT>LP_INPUT</TT> or
+<TT>LP_OUTPUT</TT>.  Calling <TT>pin_mode(pins, LP_INPUT)</TT> is exactly
+the same as calling <TT>pin_input(pins)</TT>.
+
+<P>
+Examples:
+<PRE>
+        pin_input_mode(LP_PIN01);
+        /* Pin 1 is now an input */
+
+        pin_output_mode(LP_PIN14 | LP_PIN16);
+        /* Pins 14 and 16 are now outputs */
+
+        pin_mode(LP_PIN02, LP_INPUT);
+        /* Pins 2 through 9 are now ALL inputs */
+
+        pin_mode(LP_PIN01 | LP_PIN02, LP_OUTPUT);
+        /* Pin 1, and Pins 2-9 are ALL outputs */
+
+        pin_input_mode(LP_DATA_PINS);
+        /* The constant LP_DATA_PINS is an alias for Pins 2-9 */
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION10062000000000000000">
+Device driver interface</A>
+</H2>
+
+<P>
+When using the <TT>parapindriver</TT> device interface, all functionality 
+related to pins on the parallel port is invoked via the
+<TT>ioctl(2)</TT> system
+call.  The ioctl commands for <TT>parapindriver</TT> are defined in the
+<TT>parapindriver.h</TT> header file.  The two used to set pins to be
+either output pins or input pins are ``PPDRV_IOC_PINMODE_OUT'' and
+``PPDRV_IOC_PINMODE_IN'', respectively. 
+
+<P>
+Examples:
+<PRE>
+        ioctl(device, PPDRV_IOC_PINMODE_OUT, LP_PIN01 | LP_PIN02);
+        ioctl(device, PPDRV_IOC_PINMODE_IN, LP_PIN11);
+</PRE>
+
+<P>
+Note that the arguments to these ioctl calls use exactly the same
+constants as are used by the userspace and kernel versions of parapin itself.
+The rules for combining constants using bitwise 'or' are allowed as well.
+These constants are made available to your program because the
+<TT>parapindriver.h</TT> header file also includes the <TT>parapin.h</TT>
+header file to define the constant values.
+
+<P>
+Return values from these ioctl calls are the same as those defined for
+the corresponding functions in <TT>kparapin</TT>.  There is one additional
+return value from an ioctl call in to <TT>parapindriver</TT>, the value
+<TT>-ENOTTY</TT>.  This indicates that an invalid ioctl command value was
+passed down.
+
+<P>
+
+<H1><A NAME="SECTION10070000000000000000">&#160;</A>
+<A NAME="setandclear">&#160;</A>
+<BR>
+Setting Output Pin States
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION10071000000000000000">
+C library version and Kernel version</A>
+</H2>
+
+<P>
+Once Parapin has been initialized (Section&nbsp;<A HREF="#initialization">5</A>), and
+pins have been configured as output pins (Section&nbsp;<A HREF="#configuring">6</A>),
+values can be asserted on those pins using the following functions:
+<PRE>
+        void set_pin(int pins);
+        void clear_pin(int pins);
+        void change_pin(int pins, int state);
+</PRE>
+
+<P>
+The <TT>pins</TT> argument of all three functions accepts the <TT>LP_PINnn</TT> constants described in Section&nbsp;<A HREF="#basics">3</A>.  <TT>set_pin</TT> turns pins <EM>on</EM>, electrically asserting high TTL values.
+<TT>clear_pin</TT> turns pins <EM>off</EM>, electrically asserting low TTL
+values.  The convenience function <TT>change_pin</TT> does the same
+thing as <TT>set_pin</TT> and <TT>clear_pin</TT>; its <TT>state</TT> argument
+takes one of the constants <TT>LP_SET</TT> or <TT>LP_CLEAR</TT>.
+Calling <TT>change_pin(pins, LP_SET)</TT> has exactly the same effect
+as calling <TT>set_pin(pins)</TT>.
+
+<P>
+These three functions will <EM>only</EM> have effects on pins that were
+previously configured as output pins as described in
+Section&nbsp;<A HREF="#configuring">6</A>.  Attempting to assert a value on an input
+pin will have no effect.
+
+<P>
+Note that while the <EM>direction</EM> of Pins 2-9 must be the same at
+all times (i.e., either all input or all output), the actual <EM>values</EM> of these pins are individually controllable when they are in
+output mode.
+
+<P>
+Examples:
+<PRE>
+        pin_output_mode(LP_PIN01|LP_DATA_PINS|LP_PIN14|LP_PIN16|LP_PIN17);
+        /* All these pins are now in output mode */
+
+        set_pin(LP_PIN01 | LP_PIN04 | LP_PIN07 | LP_PIN14 | LP_PIN16);
+        /* Pins 1, 4, 7, 14, and 16 are all on */
+
+        clear_pin(LP_PIN01 | LP_PIN16);
+        /* Pins 1 and 16 are now off */
+
+        change_pin(LP_PIN01 | LP_PIN02, some_integer ? LP_SET : LP_CLEAR);
+        /* Pins 1 and 2 are now off if and only if some_integer == 0 */
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION10072000000000000000">
+Device driver interface</A>
+</H2>
+
+<P>
+Setting pin state through the device driver interface follows all
+the same rules as described above.
+The ioctl commands used are ``PPDRV_IOC_PINSET'' and
+``PPDRV_IOC_PINCLEAR''.
+
+<P>
+Examples:
+<PRE>
+        ioctl(device, PPDRV_IOC_PINSET, LP_PIN01 | LP_PIN02);
+        ioctl(device, PPDRV_IOC_PINCLEAR, LP_PIN01);
+</PRE>
+
+<P>
+Return values from these ioctl calls are the same as those defined for
+the corresponding functions in <TT>kparapin</TT>.  There is one additional
+return value from an ioctl call in to <TT>parapindriver</TT>, the value
+<TT>-ENOTTY</TT>.  This indicates that an invalid ioctl command value was
+passed down.
+
+<P>
+
+<H1><A NAME="SECTION10080000000000000000">&#160;</A>
+<A NAME="polling">&#160;</A>
+<BR>
+Polling Input Pins
+</H1>
+
+<H2><A NAME="SECTION10081000000000000000">
+C library version and Kernel version</A>
+</H2>
+
+<P>
+Once Parapin has been initialized (Section&nbsp;<A HREF="#initialization">5</A>), and
+pins have been configured as input pins (Section&nbsp;<A HREF="#configuring">6</A>),
+the value being asserted by the ``far end'' can be queried using the
+following function:
+<PRE>
+        int pin_is_set(int pins);
+</PRE>
+
+<P>
+Any number of pins can be queried simultaneously.  The <TT>pins</TT>
+argument accepts the <TT>LP_PINnn</TT> constants described in
+Section&nbsp;<A HREF="#basics">3</A>.  The return value is an integer in the same
+format.  Any pins that are set (electrically high) will be set in the
+return value; pins that are clear (electrically low) will be clear in
+the return value.
+
+<P>
+Pins may only be queried if:
+
+<UL>
+<LI>They are permanent input pins (Pins 10, 11, 12, 13, and 15), as
+described in Section&nbsp;<A HREF="#specs">2</A>, <B>or</B>
+</LI>
+<LI>They are bidirectional pins previously configured as input pins,
+as described in Section&nbsp;<A HREF="#configuring">6</A>.
+</LI>
+</UL>
+
+<P>
+Any query to an output pin will always return a value indicating that
+the pin is clear.  In other words, this function <EM>can not</EM> be used
+to determine what value was previously asserted to an output pin.
+
+<P>
+Examples:
+<PRE>
+        pin_input_mode(LP_PIN01 | LP_DATA_PINS | LP_PIN17);
+        /* Pins 1, 2-9, and 17 are now in input mode, along with
+           Pins 10, 11, 12, 13, and 15, which are always inputs */
+
+        /* check the state of pin 1 */
+        printf("Pin 1 is %s!\n", pin_is_set(LP_PIN01) ? "on" : "off");
+
+        /* check pins 2, 5, 10, and 17 - demonstrating a multiple query */
+        int result = pin_is_set(LP_PIN02 | LP_PIN05 | LP_PIN10 | LP_PIN17);
+
+        if (!result)
+                printf("Pins 2, 5, 10 and 17 are all off\n");
+        else {
+                if (result &amp; LP_PIN02)
+                        printf("Pin 2 is high!\n");
+                if (result &amp; LP_PIN05)
+                        printf("Pin 5 is high!\n");
+                if (result &amp; LP_PIN10)
+                        printf("Pin 10 is high!\n");
+                if (result &amp; LP_PIN17)
+                        printf("Pin 17 is high!\n");
+        }
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION10082000000000000000">
+Device driver interface</A>
+</H2>
+
+<P>
+Querying pin state through the device driver interface follows all
+the same rules as described above.
+The ioctl command used is ``PPDRV_IOC_PINGET''.
+
+<P>
+Examples:
+<PRE>
+        int value;
+        value = ioctl(device, PPDRV_IOC_PINGET, DATA);
+</PRE>
+
+<P>
+Return values from these ioctl calls are the same as those defined for
+the corresponding functions in <TT>kparapin</TT>.  There is one additional
+return value from an ioctl call in to <TT>parapindriver</TT>, the value
+<TT>-ENOTTY</TT>.  This indicates that an invalid ioctl command value was
+passed down.
+
+<P>
+
+<H1><A NAME="SECTION10090000000000000000">&#160;</A>
+<A NAME="interrupts">&#160;</A>
+<BR>
+Interrupt (IRQ) Handling
+</H1>
+
+<P>
+The kernel-module version of Parapin lets parallel port drivers catch
+interrupts generated by devices connected to the parallel port.  Most
+hardware generates interrupts on the rising edge<A NAME="tex2html8"
+  HREF="#foot344"><SUP>1</SUP></A> of the input to Pin 10.
+
+<P>
+Before Parapin's interrupt-handling can be used, the Linux kernel
+itself must be configured to handle parallel port interrupts.  Unlike
+most other hardware devices, the kernel does not detect or claim the
+parallel port's interrupts by default.  It is possible to manually
+enable kernel IRQ handling for the parallel port by writing the
+interrupt number into the special file <TT>/proc/parport/N/irq</TT>,
+where <TT>N</TT> is the parallel port number.  For example, the following
+command tells the kernel that <TT>parport0</TT> is using IRQ 7:
+<PRE>
+        echo 7 &gt; /proc/parport/0/irq
+</PRE>
+If parallel port support is being provided to the kernel through
+modules, it is also possible to configure the IRQ number as an
+argument to the <TT>parport_pc</TT> module when it is loaded.  For
+example:
+<PRE>
+        insmod parport
+        insmod parport_pc io=0x378 irq=7
+</PRE>
+Note that both the <TT>io</TT> and <TT>irq</TT> arguments are required, even
+if the parallel port is using the default I/O base address of 0x378.
+
+<P>
+The actual interrupt number used by the kernel (7 in the examples
+above) must, of course, match the interrupt line being used by the
+hardware.  The IRQ used by the parallel port hardware is usually
+configured in the BIOS setup screen on modern motherboards that have
+built-in parallel ports.  Older motherboards or stand-alone ISA cards
+usually have jumpers or DIP switches for configuring the interrupt
+number.  The typical assignment of interrupts to parallel ports is as
+follows:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Port</TD>
+<TD ALIGN="CENTER">Interrupt</TD>
+</TR>
+<TR><TD ALIGN="CENTER">LPT1</TD>
+<TD ALIGN="CENTER">7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">LPT2</TD>
+<TD ALIGN="CENTER">5</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+These are reasonable defaults if the actual hardware configuration is
+not known.
+
+<P>
+As described in Section&nbsp;<A HREF="#initialization">5</A>, the <TT>pin_init_kernel()</TT> function allows installation of an interrupt
+handler function by passing a pointer to the handler as the second
+argument.  A <TT>NULL</TT> value for this parameter means that interrupts
+are disabled.  A non-NULL value should be a pointer to a callback
+function that has the following prototype:
+
+<P>
+<PRE>
+        void my_interrupt_handler(int irq, void *dev_id, struct pt_regs *regs);
+</PRE>
+
+<P>
+If and only if a pointer to such a handler function is passed to <TT>pin_init_kernel</TT>, the following functions can then be used to turn
+interrupts on and off:
+<PRE>
+        pin_enable_irq();
+        pin_disable_irq();
+</PRE>
+
+<P>
+<B>Parapin turns parallel port interrupts off by default.</B>  That is,
+no interrupts will be generated until after a call to <TT>pin_init_kernel()</TT> to install the interrupt handler, <EM>and</EM> a
+subsequent call to <TT>pin_enable_irq();</TT>
+
+<P>
+<B>Interrupts must not be enabled and disabled from within the
+interrupt handler itself.</B>  In other words, the interrupt handling
+function passed to <TT>pin_init_kernel()</TT> <EM>must not</EM> call <TT>pin_enable_irq()</TT> or <TT>pin_disable_irq()</TT>.  However, the
+handler function <EM>does not</EM> need to be reentrant: the IRQ line
+that causes an interrupt handler to run is automatically disabled by
+the Linux kernel while the interrupt's handler is running.  There are
+other important restrictions on kernel programming in general and
+interrupt-handler writing in particular; these issues are beyond the
+scope of this document.  For more details, the reader is referred to
+the Linux kernel programming guides mentioned in Section&nbsp;<A HREF="#basics">3</A>.
+
+<P>
+Some PC hardware generates a spurious parallel port interrupt
+immediately after the parallel port's interrupts are enabled (perhaps
+to help auto-detection of the IRQ number).  Parapin includes a
+workaround that prevents this interrupt from being delivered.  This is
+done to ensure consistent interrupt behavior across all platforms.
+
+<P>
+
+<H1><A NAME="SECTION100100000000000000000">
+Examples</A>
+</H1>
+
+<P>
+Several programs with example code using Parapin are included in
+the Parapin distribution.  Look in the&nbsp;/examples subfolder.
+
+<P>
+
+<H1><A NAME="SECTION100110000000000000000">
+Limitations and Future Work</A>
+</H1>
+
+<P>
+Currently, Parapin only supports a single parallel port at a time.  It
+is not possible to have a single instance of the library manage
+multiple instances of a parallel port.  This may be a problem for
+software that is simultaneously trying to control multiple parallel
+ports.  Someday this may be addressed but it will make the interface
+messier (a port handle will have to be passed to every function along
+with pin specifiers).
+
+<P>
+The C-library version of Parapin should probably do better probing of
+the parallel port, but any desire to do this was limited because it
+replicates what is already done by the Linux kernel and we expect that
+most production use of parapin will be with the kernel version anyway.
+
+<P>
+If you have bug reports, patches, suggestions, or any other comments,
+please feel free to visit the project page at
+<A NAME="tex2html9"
+  HREF="http://parapin.sourceforge.net/">http://parapin.sourceforge.net/</A>.
+Here you may subscribe to the parapin-users mailing list, and also
+submit support requests.
+
+<P>
+
+<H1><A NAME="SECTION100120000000000000000">
+About this document ...</A>
+</H1>
+ <STRONG>PARAPIN:
+A Parallel Port Pin Programming Library for Linux</STRONG><P>
+This document was generated using the
+<A HREF="http://www.latex2html.org/"><STRONG>LaTeX</STRONG>2<tt>HTML</tt></A> translator Version 2002-2-1 (1.71)
+<P>
+Copyright &#169; 1993, 1994, 1995, 1996,
+<A HREF="http://cbl.leeds.ac.uk/nikos/personal.html">Nikos Drakos</A>, 
+Computer Based Learning Unit, University of Leeds.
+<BR>
+Copyright &#169; 1997, 1998, 1999,
+<A HREF="http://www.maths.mq.edu.au/~ross/">Ross Moore</A>, 
+Mathematics Department, Macquarie University, Sydney.
+<P>
+The command line arguments were: <BR>
+ <STRONG>latex2html</STRONG> <TT>-split 0 -ascii_mode -noauto_link -rootdir /tmp/parapintemp parapin</TT>
+<P>
+The translation was initiated by Al Hooton on 2007-07-08
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot344">... edge</A><A
+ HREF="parapin.html#tex2html8"><SUP>1</SUP></A></DT>
+<DD>Legend has
+it that some very old parallel port hardware generates interrupts on
+the <EM>falling</EM> edge.
+
+</DD>
+</DL><HR>
+<!--Navigation Panel-->[ ] []    
+<BR>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Hooton
+2007-07-08
+</ADDRESS>
+</BODY>
+</HTML>

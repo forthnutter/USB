@@ -1,0 +1,62 @@
+	parashell - Parallel Port Control for Linux
+	http://parashell.sourceforge.net/
+
+	Copyright (C) by Brett Carroll
+	<brettcarroll@movlug.com>
+
+	Please send comments, questions, submissions to
+	Brett Carroll <brettcarroll@movlug.com>
+
+GENERAL
+-------
+
+parashell is a Parallel Port interface for Linux and Windows.
+
+Under Linux parashell allows the control of multiple Parallel Ports through simple command
+line arguments.
+
+Under Windows parashell allows reading and writing of the CONTROL, DATA, and STATUS bytes on the default parallel port (usually 0x378)
+
+pin is also included for Linux, which reads the status of a parallel port.
+(ie., you can use the parallel port as an input device)
+
+All you need is some scripting knowledge, a parallel port and some misc electronic components.
+
+COPYING
+-------
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program in a text-formatted file named COPYING; if
+not, write to the Free Software Foundation, Inc., 59 Temple Place -
+Suite 330, Boston, MA  02111-1307, USA.
+
+
+FEATURES
+--------
+	- Allows control of multiple parallel ports
+	- Easily scriptable
+	- Windows and Linux support
+
+RELATED LINKS
+-------------
+
+The parashell homepage:
+	http://parashell.sourceforge.net
+
+
+MORE INFORMATION
+----------------
+
+See the following files for more information:
+
+COPYING		GNU General Public License
+README		This File
