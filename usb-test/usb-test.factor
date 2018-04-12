@@ -24,11 +24,11 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
 ! uint8_t i;
 
   swap
-  libusb_device_descriptor <struct>
+  libusb_device_descriptor <struct> device set device get
   libusb_get_device_descriptor
   [
     device get
-    handle get
+    cell <byte-array> handle set handle get
     libusb_open
     LIBUSB_SUCCESS =
     [
@@ -135,7 +135,7 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
         [
           <alien> 0 print_device
           ! libusb_device_descriptor <struct> devdes set devdes get
-          ! libusb_get_device_descriptor drop devdes get 
+          ! libusb_get_device_descriptor drop devdes get
         ] map
         dev get malloc-byte-array alien-address >hex
         drop drop
