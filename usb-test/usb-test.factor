@@ -5,7 +5,7 @@
 USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
         libusb byte-arrays namespaces math math.parser arrays sequences
         tokyo.utils tools.hexdump prettyprint combinators.short-circuit
-        memory vm classes.struct ;
+        memory vm classes.struct tools.continuations ;
 
 IN: usb.usb-test
 
@@ -15,43 +15,32 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
   over { [ c-ptr? ] [ ] } 1&& [ drop ] [ call ] if ; inline
 
 
-: print_device ( libusb_device level -- n )
+: print_device ( libusb_device -- n )
 ! struct libusb_device_descriptor desc;
 ! libusb_device_handle *handle = NULL;
 ! char description[256];
 ! char string[256];
 ! int ret;
 ! uint8_t i;
-
-  swap
-  libusb_device_descriptor <struct> device set device get
+  dup device set
+  libusb_device_descriptor <struct> desc set desc get
   libusb_get_device_descriptor
   [
-    device get
-    cell <byte-array> handle set handle get
-    libusb_open
-    LIBUSB_SUCCESS =
-    [
-      desc get iManufacturer>>
-      [
-        libusb_get_string_descriptor_ascii
-        [ usbstring get ]
-        [ desc get idVendor>> >hex ] if
-      ]
-      [ desc get idVendor>> >hex ] if
-    ]
-    [ desc get idVendor>> >hex ] if
+    ""
+    desc get idVendor>> >hex
+    prepend
+    " " append
+    desc get idProduct>> >hex
+    append
+    " (" append
+    device get libusb_get_bus_number number>string append
+    " " append
+    device get libusb_get_device_address number>string append
+    ")" append
 
-    desc get iProduct>>
-    [
-      libusb_get_string_descriptor_ascii
-      [ usbstring get ]
-      [  ] if
-    ]
-    [  ] if
   ]
   [ "failed to get device descriptor" ] if
-
+  drop
 ! ret = libusb_open(dev, &handle);
 ! if (LIBUSB_SUCCESS == ret) {
 !  if (desc.iManufacturer) {
@@ -133,7 +122,8 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
         dev get int deref <alien> cnt get cell * memory>byte-array
         cell_t cast-array >array
         [
-          <alien> 0 print_device
+          break
+          <alien> print_device
           ! libusb_device_descriptor <struct> devdes set devdes get
           ! libusb_get_device_descriptor drop devdes get
         ] map
