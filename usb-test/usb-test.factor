@@ -40,7 +40,7 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
 
   ]
   [ "failed to get device descriptor" ] if
-  drop
+  
 ! ret = libusb_open(dev, &handle);
 ! if (LIBUSB_SUCCESS == ret) {
 !  if (desc.iManufacturer) {
