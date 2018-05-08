@@ -26,12 +26,21 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
   libusb_device_descriptor <struct> desc set desc get
   libusb_get_device_descriptor
   [
-    ""
-    desc get idVendor>> >hex
-    prepend
-    " " append
-    desc get idProduct>> >hex
-    append
+    cell <byte-array> handle set
+    device get handle get libusb_open LIBUSB_SUCCESS?
+    [
+    
+    ]
+    [
+      ""
+      desc get idVendor>> >hex
+      prepend " " append
+      desc get idProduct>> >hex
+      append
+    ] if
+
+
+
     " (" append
     device get libusb_get_bus_number number>string append
     " " append
@@ -40,7 +49,9 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
 
   ]
   [ "failed to get device descriptor" ] if
-  
+
+
+
 ! ret = libusb_open(dev, &handle);
 ! if (LIBUSB_SUCCESS == ret) {
 !  if (desc.iManufacturer) {
