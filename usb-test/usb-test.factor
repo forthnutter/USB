@@ -9,7 +9,7 @@ USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
 
 IN: usb.usb-test
 
-SYMBOLS: dev cnt devdes device handle desc usbstring ;
+SYMBOLS: dev cnt devdes device handle desc usbstring libusb_device_handle ;
 
 : ptr-pass-through ( obj quot -- alien )
   over { [ c-ptr? ] [ ] } 1&& [ drop ] [ call ] if ; inline
@@ -29,7 +29,7 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
     cell <byte-array> handle set
     device get handle get libusb_open LIBUSB_SUCCESS?
     [
-    
+
     ]
     [
       ""
@@ -144,3 +144,21 @@ SYMBOLS: dev cnt devdes device handle desc usbstring ;
 
     f libusb_exit
     ;
+
+
+
+
+  : usb-test ( -- )
+    f libusb_init
+    [
+
+      f    ! ctx
+      0x067b  ! vid
+      0x2305  ! pid
+      libusb_open_device_with_vid_pid libusb_device_handle set
+
+      libusb_device_handle get libusb_close
+
+    ] when
+
+    f libusb_exit ;
