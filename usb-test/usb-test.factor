@@ -149,13 +149,24 @@ SYMBOLS: dev cnt devdes device handle desc usbstring libusb_device_handle ;
 
 
   : usb-test ( -- )
-    f libusb_init
+    f libusb_init <libusb_error> LIBUSB_SUCCESS =
     [
 
       f    ! ctx
       0x067b  ! vid
       0x2305  ! pid
-      libusb_open_device_with_vid_pid libusb_device_handle set
+      libusb_open_device_with_vid_pid
+      [ libusb_device_handle set ] keepS
+      [
+        libusb_device_handle get
+        0
+        libusb_claim_interface
+        [
+          libusb_device_handle get
+          0
+          libusb_release_interface
+        ] when
+      ] when
 
       libusb_device_handle get libusb_close
 
