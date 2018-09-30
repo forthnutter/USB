@@ -9,7 +9,7 @@ USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
 
 IN: usb.usb-test
 
-SYMBOLS: dev cnt devdes device handle desc usbstring libusb_device_handle ;
+SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
 
 : ptr-pass-through ( obj quot -- alien )
   over { [ c-ptr? ] [ ] } 1&& [ drop ] [ call ] if ; inline
@@ -149,26 +149,28 @@ SYMBOLS: dev cnt devdes device handle desc usbstring libusb_device_handle ;
 
 
   : usb-test ( -- )
-    f libusb_init <libusb_error> LIBUSB_SUCCESS =
+    0  int <ref> cnt set libusb_config_descriptor <struct> confdes set
+    f libusb_init <libusb_error> LIBUSB_SUCCESS?
     [
 
       f    ! ctx
       0x067b  ! vid
       0x2305  ! pid
       libusb_open_device_with_vid_pid
-      [ libusb_device_handle set ] keepS
+      [ dev set ] keep
       [
-        libusb_device_handle get
-        0
-        libusb_claim_interface
+        dev get 0 libusb_kernel_driver_active 1 =
+        [ dev get 0 libusb_detach_kernel_driver drop ] when
+        dev get 0 libusb_claim_interface
         [
-          libusb_device_handle get
-          0
-          libusb_release_interface
+          dev get confdes get libusb_get_active_config_descriptor drop
+          dev get 0 libusb_release_interface drop
         ] when
+        dev get 0 libusb_kernel_driver_active 0 =
+        [ dev get 0 libusb_attach_kernel_driver drop ] when
       ] when
 
-      libusb_device_handle get libusb_close
+      dev get libusb_close
 
     ] when
 
