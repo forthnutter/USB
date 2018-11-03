@@ -5,7 +5,7 @@
 USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
         libusb byte-arrays namespaces math math.parser arrays sequences
         tokyo.utils tools.hexdump prettyprint combinators.short-circuit
-        memory vm classes.struct tools.continuations libc ;
+        memory vm classes.struct tools.continuations libc literals ;
 
 IN: usb.usb-test
 
@@ -164,7 +164,12 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
         dev get 0 libusb_claim_interface
         [
           break
-          dev get 1 confdes get malloc-byte-array alien-address int <ref> libusb_get_config_descriptor drop
+          dev get libusb_get_device cnt get libusb_get_active_config_descriptor
+          <libusb_error> LIBUSB_SUCCESS?
+          [
+            cnt get int deref <alien> libusb_config_descriptor memory>struct .
+            dev get . 0 LIBUSB_ENDPOINT_IN <libusb_endpoint_direction> bitor .
+          ] when
           dev get 0 libusb_release_interface drop
         ] when
         dev get 0 libusb_kernel_driver_active 0 =
