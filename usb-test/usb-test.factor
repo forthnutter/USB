@@ -5,7 +5,7 @@
 USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
         libusb byte-arrays namespaces math math.parser arrays sequences
         tokyo.utils tools.hexdump prettyprint combinators.short-circuit
-        memory vm classes.struct tools.continuations libc literals ;
+        memory vm classes.struct tools.continuations libc literals alien.enums ;
 
 IN: usb.usb-test
 
@@ -168,7 +168,16 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
           <libusb_error> LIBUSB_SUCCESS?
           [
             cnt get int deref <alien> libusb_config_descriptor memory>struct .
-            dev get . 0 LIBUSB_ENDPOINT_IN <libusb_endpoint_direction> bitor .
+            dev get     ! device handler
+            0 LIBUSB_ENDPOINT_IN enum>number bitor 0x01 bitor ! read ep1
+            LIBUSB_REQUEST_TYPE_CLASS enum>number bitor
+            1         ! Get PORT STATUS
+            0         ! value = 0
+            0         ! interface = 0
+            cnt get   ! data
+            1         ! length
+            5000      ! timeout
+            libusb_control_transfer
           ] when
           dev get 0 libusb_release_interface drop
         ] when
