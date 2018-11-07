@@ -164,9 +164,11 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
         dev get 0 libusb_claim_interface
         [
           break
+          dev get 0 1 libusb_set_interface_alt_setting drop
           dev get libusb_get_device cnt get libusb_get_active_config_descriptor
           <libusb_error> LIBUSB_SUCCESS?
           [
+            break
             cnt get int deref <alien> libusb_config_descriptor memory>struct .
             dev get     ! device handler
             0 LIBUSB_ENDPOINT_IN enum>number bitor 0x01 bitor ! read ep1
@@ -177,7 +179,10 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
             cnt get   ! data
             1         ! length
             5000      ! timeout
-            libusb_control_transfer
+            libusb_control_transfer 0 >
+            [
+              cnt get first >hex drop
+            ] when
           ] when
           dev get 0 libusb_release_interface drop
         ] when
