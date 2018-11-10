@@ -161,11 +161,14 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
       [
         dev get 0 libusb_kernel_driver_active 1 =
         [ dev get 0 libusb_detach_kernel_driver drop ] when
+        dev get 2 libusb_set_configuration drop
         dev get 0 libusb_claim_interface
         [
           break
-          dev get 0 1 libusb_set_interface_alt_setting drop
-          dev get libusb_get_device cnt get libusb_get_active_config_descriptor
+          dev get 0 2 libusb_set_interface_alt_setting drop
+          dev get 0 libusb_claim_interface drop
+          dev get libusb_get_device 1 cnt get libusb_get_config_descriptor
+          ! dev get libusb_get_device cnt get libusb_get_active_config_descriptor
           <libusb_error> LIBUSB_SUCCESS?
           [
             break
@@ -181,7 +184,7 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
             5000      ! timeout
             libusb_control_transfer 0 >
             [
-              cnt get first >hex drop
+              cnt get first >hex .
             ] when
           ] when
           dev get 0 libusb_release_interface drop
