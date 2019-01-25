@@ -161,7 +161,7 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
       [
         dev get 0 libusb_kernel_driver_active 1 =
         [ dev get 0 libusb_detach_kernel_driver drop ] when
-        dev get 2 libusb_set_configuration drop
+        ! dev get 0 libusb_set_configuration drop
         dev get 0 libusb_claim_interface
         [
           break
