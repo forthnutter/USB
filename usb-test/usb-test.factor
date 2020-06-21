@@ -2,7 +2,8 @@
 
 
 
-USING:  kernel alien alien.c-types alien.data accessors alien.accessors layouts
+USING:  kernel alien alien.c-types alien.data accessors alien.accessors
+        destructors layouts
         libusb byte-arrays namespaces math math.parser arrays sequences
         tokyo.utils tools.hexdump prettyprint combinators.short-circuit
         memory vm classes.struct tools.continuations libc literals alien.enums ;
@@ -11,44 +12,47 @@ IN: usb.usb-test
 
 SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
 
+! make some kind of structure to keep libusb_get_string_descriptor_ascii
+TUPLE: tusb < disposable ctx rctx hdev devs ndevs ;
+
 : ptr-pass-through ( obj quot -- alien )
   over { [ c-ptr? ] [ ] } 1&& [ drop ] [ call ] if ; inline
 
 
-: print_device ( libusb_device -- n )
+! : print_device ( libusb_device -- n )
 ! struct libusb_device_descriptor desc;
 ! libusb_device_handle *handle = NULL;
 ! char description[256];
 ! char string[256];
 ! int ret;
 ! uint8_t i;
-  dup device set
-  libusb_device_descriptor <struct> desc set desc get
-  libusb_get_device_descriptor
-  [
-    cell <byte-array> handle set
-    device get handle get libusb_open LIBUSB_SUCCESS?
-    [
+!  dup device set
+!  libusb_device_descriptor <struct> desc set desc get
+!  libusb_get_device_descriptor
+!  [
+!    cell <byte-array> handle set
+!    device get handle get libusb_open LIBUSB_SUCCESS?
+!    [
 
-    ]
-    [
-      ""
-      desc get idVendor>> >hex
-      prepend " " append
-      desc get idProduct>> >hex
-      append
-    ] if
+!    ]
+!    [
+!      ""
+!      desc get idVendor>> >hex
+!      prepend " " append
+!      desc get idProduct>> >hex
+!      append
+!    ] if
 
 
 
-    " (" append
-    device get libusb_get_bus_number number>string append
-    " " append
-    device get libusb_get_device_address number>string append
-    ")" append
+!    " (" append
+!    device get libusb_get_bus_number number>string append
+!    " " append
+!    device get libusb_get_device_address number>string append
+!    ")" append
 
-  ]
-  [ "failed to get device descriptor" ] if
+!  ]
+!  [ "failed to get device descriptor" ] if
 
 
 
@@ -119,8 +123,21 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
 
 ! return 0;
 ! }
-;
+! ;
 
+
+: tusb-devs-close ( tusb -- )
+  [ ndevs>> ] keep swap 0 = not
+  [
+    [ devs>> ] keep swap 1 libusb_free_device_list
+  ] when drop ;
+
+
+
+M: tusb dispose* ( tusb -- )
+  break
+  [ tusb-devs-close ] keep
+  ctx>> libusb_exit ;
 
 
 : usb-start ( -- )
@@ -134,7 +151,7 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
         cell_t cast-array >array
         [
           break
-          <alien> print_device
+!          <alien> print_device
           ! libusb_device_descriptor <struct> devdes set devdes get
           ! libusb_get_device_descriptor drop devdes get
         ] map
@@ -199,3 +216,29 @@ SYMBOLS: dev cnt confdes devdes device handle desc usbstring ;
     ] when
 
     f libusb_exit ;
+
+: tusb-devlist ( tusb -- list )
+  [ ctx>> ] keep
+  [ devs>> libusb_get_device_list ] keep [ ndevs<< ] keep
+
+  ;
+
+
+
+: tusb-init ( tusb -- ? )
+  dup ctx>> libusb_init >>rctx rctx>> ;
+
+: with-tusb ( tusb quot -- )
+  with-disposal ; inline
+
+
+: <tusb> ( -- tusb )
+  tusb new-disposable
+  f >>ctx
+  f >>hdev
+  cell <byte-array> >>devs
+  dup
+  [
+    [ tusb-init drop ] keep
+    tusb-devlist drop
+  ] with-tusb ;
